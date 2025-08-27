@@ -1,41 +1,67 @@
 # PR Title Generator
 
-A machine learning-based PR title generator that creates meaningful and specific pull request titles based on commit messages and branch context.
+A machine learning-based PR title generator that creates meaningful and specific pull request titles based on commit messages and branch context. Available as a global CLI tool that can be called from any git repository.
 
 ## Features
 
+- **Global CLI tool**: Install once, use from any git repository
 - **LLM-based generation**: Uses TinyLlama model for intelligent title generation
 - **Context filtering**: Automatically removes noise and redundant information
 - **Smart analysis**: Analyzes both branch context and commit messages
 - **Customizable**: Configurable temperature and generation parameters
+- **Git validation**: Automatically validates that you're in a git repository
 
 ## Installation
 
-1. Create a virtual environment:
+### Option 1: Quick Install (Recommended)
 ```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Clone the repository
+git clone https://github.com/alessandropac96/pr-title-generator.git
+cd pr-title-generator
+
+# Run the installation script
+./install.sh
 ```
 
-2. Install dependencies:
+### Option 2: Manual Installation
 ```bash
+# Clone the repository
+git clone https://github.com/alessandropac96/pr-title-generator.git
+cd pr-title-generator
+
+# Install dependencies
+pip3 install -r requirements.txt
+
+# Install as a Python package
+pip3 install -e .
+```
+
+### Option 3: Virtual Environment
+```bash
+# Create a virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Use directly
+python3 main.py
 ```
 
 ## Usage
 
 ### Basic Usage
 ```bash
-python3 generate-pr-title-ml.py --branch origin/feature/my-feature
+# From any git repository
+generate-pr-title
 ```
 
 ### Advanced Usage
 ```bash
-python3 generate-pr-title-ml.py \
-  --branch origin/feature/my-feature \
-  --model tiny-llama \
-  --temperature 0.6 \
-  --verbose
+generate-pr-title --branch feature/my-feature --verbose
+generate-pr-title --model phi-2 --temperature 0.6
+generate-pr-title --max-commits 30 --base develop
 ```
 
 ### Options
@@ -44,6 +70,7 @@ python3 generate-pr-title-ml.py \
 - `--max-commits`: Maximum number of commits to analyze (default: 20)
 - `--model`: LLM model to use (default: tiny-llama)
 - `--temperature`: Generation temperature (0.1-1.0, default: 0.7)
+- `--max-length`: Maximum title length (default: 50)
 - `--verbose`: Enable verbose output
 
 ## Supported Models
