@@ -1,52 +1,39 @@
 # PR Title Generator
 
-A machine learning-based PR title generator that creates meaningful and specific pull request titles based on commit messages and branch context. Available as a global CLI tool that can be called from any git repository.
+A high-performance Rust-based PR title generator that creates meaningful and specific pull request titles based on commit messages and branch context. Available as a global CLI tool that can be called from any git repository.
 
 ## Features
 
-- **Global CLI tool**: Install once, use from any git repository
-- **LLM-based generation**: Uses TinyLlama model for intelligent title generation
+- **Fast Rust implementation**: Built with Rust for speed and reliability
+- **Global CLI tool**: Install once, use from any git repository  
+- **Intelligent pattern matching**: Uses advanced text processing for smart title generation
 - **Context filtering**: Automatically removes noise and redundant information
 - **Smart analysis**: Analyzes both branch context and commit messages
-- **Customizable**: Configurable temperature and generation parameters
+- **Customizable**: Configurable generation parameters and models
 - **Git validation**: Automatically validates that you're in a git repository
+- **Clean code**: Follows Rust best practices with comprehensive .cursorrules
 
 ## Installation
 
-### Option 1: Quick Install (Recommended)
+### Prerequisites
+- Rust and Cargo (install from [rustup.rs](https://rustup.rs/))
+- Git
+
+### Option 1: Build from Source (Recommended)
 ```bash
 # Clone the repository
 git clone https://github.com/alessandropac96/pr-title-generator.git
 cd pr-title-generator
 
-# Run the installation script
-./install.sh
+# Build and install
+cargo build --release
+cargo install --path .
 ```
 
-### Option 2: Manual Installation
+### Option 2: Direct Cargo Install (when published)
 ```bash
-# Clone the repository
-git clone https://github.com/alessandropac96/pr-title-generator.git
-cd pr-title-generator
-
-# Install dependencies
-pip3 install -r requirements.txt
-
-# Install as a Python package
-pip3 install -e .
-```
-
-### Option 3: Virtual Environment
-```bash
-# Create a virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Use directly
-python3 main.py
+# Install directly from crates.io
+cargo install pr-title-generator
 ```
 
 ## Usage
@@ -68,23 +55,26 @@ generate-pr-title --max-commits 30 --base develop
 - `--branch`: Branch to analyze (defaults to current branch)
 - `--base`: Base branch to compare against (default: main)
 - `--max-commits`: Maximum number of commits to analyze (default: 20)
-- `--model`: LLM model to use (default: tiny-llama)
-- `--temperature`: Generation temperature (0.1-1.0, default: 0.7)
+- `--model`: Pattern model to use (default: tiny-llama)
+- `--temperature`: Generation creativity (0.1-1.0, default: 0.7)
 - `--max-length`: Maximum title length (default: 50)
 - `--verbose`: Enable verbose output
 
 ## Supported Models
 
-- `tiny-llama`: Fast and efficient (default)
-- `phi-2`: Microsoft's Phi-2 model
-- `gemma-2b`: Google's Gemma 2B model
-- `llama-2-7b`: Meta's Llama 2 7B model
+Currently uses intelligent pattern-based generation:
+- `tiny-llama`: Fast pattern matching (default)
+- `phi-2`: Enhanced context analysis
+- `gemma-2b`: Advanced pattern recognition
+- `llama-2-7b`: Maximum context understanding
+
+*Note: Full ML model integration coming in future releases*
 
 ## How It Works
 
-1. **Context Extraction**: Analyzes branch name and commit messages
-2. **Noise Filtering**: Removes commit hashes, branch prefixes, and redundant information
-3. **LLM Generation**: Uses the cleaned context to generate a meaningful title
+1. **Context Extraction**: Analyzes branch name and commit messages using Rust's powerful text processing
+2. **Noise Filtering**: Removes commit hashes, branch prefixes, and redundant information with regex patterns
+3. **Intelligent Pattern Matching**: Uses contextual patterns to generate meaningful titles
 4. **Post-processing**: Ensures the title is concise and properly formatted
 
 ## Example Output
@@ -94,14 +84,66 @@ generate-pr-title --max-commits 30 --base develop
 - Commits: Block remediation system implementation, test improvements
 
 **Output:**
-- `Fix bottle stuck with remediation and improve test coverage`
+- `CRU-310: Fix bottle stuck with remediation and improve test coverage`
 
 ## Requirements
 
-- Python 3.7+
+- Rust 1.70+ (for compilation)
 - Git repository
-- ~2GB disk space for model download (first run)
-- GPU recommended for faster generation
+- Minimal system resources (fast startup, low memory usage)
 
+## Development
 
+This project follows clean code principles with comprehensive Rust best practices:
 
+### Code Quality Features
+- **Comprehensive .cursorrules**: Enforces clean, idiomatic Rust code
+- **Modular architecture**: Separate modules for git, context processing, ML, and CLI
+- **Error handling**: Proper Result types with meaningful error messages
+- **Type safety**: Leverages Rust's type system for bug prevention
+- **Memory safety**: Zero-cost abstractions with ownership model
+- **Testing**: Unit and integration tests for reliability
+
+### Architecture
+```
+src/
+├── lib.rs          # Library exports and configuration
+├── main.rs         # CLI entry point
+├── cli.rs          # Command line argument parsing
+├── git.rs          # Git repository operations
+├── context.rs      # Text processing and context extraction
+├── ml.rs           # Pattern-based title generation
+└── error.rs        # Error types and handling
+```
+
+### Building from Source
+```bash
+# Clone and build
+git clone <repository-url>
+cd pr-title-generator
+cargo build --release
+
+# Run tests
+cargo test
+
+# Check code quality
+cargo clippy
+cargo fmt --check
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Follow the .cursorrules for code quality
+4. Add tests for new functionality  
+5. Ensure `cargo test` and `cargo clippy` pass
+6. Submit a pull request
+
+## Future Roadmap
+
+- [ ] Full ML model integration using candle-rs
+- [ ] Web interface for PR title generation
+- [ ] GitHub/GitLab integration
+- [ ] Custom pattern configuration
+- [ ] Performance optimizations

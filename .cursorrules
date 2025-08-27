@@ -1,0 +1,163 @@
+# Rust Code Quality and Style Rules
+
+## Core Principles
+- Prioritize code clarity and readability over cleverness
+- Functions should have a single responsibility and be as short as possible
+- Use meaningful names that explain intent without needing comments
+- Prefer composition over inheritance
+- Handle errors explicitly using Result<T, E> types
+- Use type safety to prevent bugs at compile time
+
+## Function Design
+- Keep functions under 20 lines when possible
+- Use descriptive function names that explain what they do
+- Prefer pure functions (no side effects) when possible
+- Use early returns to reduce nesting
+- Pass parameters by reference (&T) unless ownership transfer is needed
+
+## Error Handling
+- Use Result<T, E> for recoverable errors
+- Use panic! only for unrecoverable errors or programming bugs
+- Provide meaningful error messages with context
+- Use anyhow::Result for application errors and thiserror for library errors
+- Chain errors using .with_context() to provide debugging information
+
+## Memory Management
+- Prefer borrowing (&T) over owned values (T) when possible
+- Use Cow<str> for strings that might be borrowed or owned
+- Avoid unnecessary cloning - use references and lifetimes instead
+- Use Vec::with_capacity() when the size is known in advance
+
+## Code Organization
+- Keep modules focused on a single domain
+- Use pub(crate) for internal APIs that shouldn't be public
+- Group related functionality into modules
+- Use re-exports (pub use) to create clean public APIs
+- Keep main.rs minimal - delegate to library modules
+
+## Naming Conventions
+- Use snake_case for variables, functions, and modules
+- Use PascalCase for types, traits, and enums
+- Use SCREAMING_SNAKE_CASE for constants
+- Prefer descriptive names over abbreviations
+- Use _unused for intentionally unused variables
+
+## Testing
+- Write unit tests for all public functions
+- Use descriptive test names that explain the scenario
+- Test error conditions as well as happy paths
+- Use #[cfg(test)] for test modules
+- Prefer integration tests for end-to-end scenarios
+
+## Documentation
+- Document all public APIs with /// comments
+- Include examples in documentation when helpful
+- Use //! for module-level documentation
+- Keep comments focused on "why" rather than "what"
+
+## Performance
+- Measure before optimizing
+- Use iterators instead of manual loops when possible
+- Prefer Iterator::collect() over manual Vec building
+- Use String::with_capacity() for known string sizes
+- Consider using &str instead of String for temporary data
+
+## Dependencies
+- Use specific version numbers in Cargo.toml
+- Prefer well-maintained crates with good documentation
+- Minimize the number of dependencies
+- Use features flags to enable only needed functionality
+
+## Async Code (if needed)
+- Use async/await for I/O-bound operations
+- Avoid async for CPU-bound operations
+- Use tokio::spawn for concurrent tasks
+- Handle cancellation gracefully
+
+## CLI Design
+- Use clap for argument parsing with derive macros
+- Provide helpful error messages for invalid input
+- Support --help and --version flags
+- Use exit codes: 0 for success, 1 for user error, 2 for system error
+
+## Git Integration
+- Use git2 crate for Git operations
+- Handle missing Git repositories gracefully
+- Validate Git operations before proceeding
+- Provide clear error messages for Git failures
+
+## ML Model Integration
+- Load models lazily only when needed
+- Handle model download failures gracefully
+- Provide progress feedback for long operations
+- Use appropriate error types for ML failures
+
+## Example Code Patterns
+
+### Error Handling Pattern
+```rust
+use anyhow::{Context, Result};
+
+fn process_git_repo(path: &Path) -> Result<String> {
+    let repo = git2::Repository::open(path)
+        .with_context(|| format!("Failed to open Git repository at {}", path.display()))?;
+    
+    let head = repo.head()
+        .context("Failed to get HEAD reference")?;
+    
+    Ok(head.name().unwrap_or("unknown").to_string())
+}
+```
+
+### Function Design Pattern
+```rust
+/// Extract branch context from a branch name
+fn extract_branch_context(branch_name: &str) -> BranchContext {
+    let clean_name = remove_branch_prefixes(branch_name);
+    let ticket = extract_ticket_number(&clean_name);
+    let change_type = infer_change_type(&clean_name);
+    let description = extract_description(&clean_name, &ticket);
+    
+    BranchContext {
+        ticket,
+        change_type,
+        description,
+    }
+}
+```
+
+### Builder Pattern for Configuration
+```rust
+#[derive(Debug, Clone)]
+pub struct GeneratorConfig {
+    pub model_name: String,
+    pub temperature: f32,
+    pub max_length: usize,
+    pub verbose: bool,
+}
+
+impl Default for GeneratorConfig {
+    fn default() -> Self {
+        Self {
+            model_name: "tiny-llama".to_string(),
+            temperature: 0.7,
+            max_length: 50,
+            verbose: false,
+        }
+    }
+}
+
+impl GeneratorConfig {
+    pub fn with_model(mut self, model: impl Into<String>) -> Self {
+        self.model_name = model.into();
+        self
+    }
+    
+    pub fn with_temperature(mut self, temperature: f32) -> Self {
+        self.temperature = temperature;
+        self
+    }
+}
+```
+
+Follow these rules consistently to maintain high code quality and readability.
